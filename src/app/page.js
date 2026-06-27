@@ -1,19 +1,27 @@
-import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+export const revalidate = 0
 
-export default async function Home() {
-  const { data: posts, error } = await supabase
+import { supabase } from "@/lib/supabase";
+import PostList from "@/components/PostList";
+
+const PAGE_SIZE = 15;
+
+export default async function Home({ searchParams }) {
+  const { page: pageParam } = await searchParams;
+  const page = parseInt(pageParam || "1");
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
+  const { data: posts, error, count } = await supabase
     .from("posts")
-    .select("id, title, excerpt, created_at")
-    .order("created_at", { ascending: false });
+    .select("id, title, excerpt, created_at", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, to);
 
   if (error) {
-    return (
-      <div style={{ padding: 40 }}>
-        Error loading posts
-      </div>
-    );
+    return <div style={{ padding: 40 }}>Error loading posts</div>;
   }
+
+  const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
 
   return (
     <div
@@ -24,94 +32,12 @@ export default async function Home() {
         fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
       }}
     >
-      {/* HEADER */}
       <div style={{ marginBottom: 30 }}>
         <h1 style={{ margin: 0 }}>Nationwide Radio broadcast articles</h1>
-        <p style={{ color: "#666", marginTop: 5 }}>
-          Latest posts
-        </p>
+        <p style={{ color: "#666", marginTop: 5 }}>Latest posts</p>
       </div>
 
-      {/* POSTS GRID (like editor layout) */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "2fr 1fr",
-          gap: 20,
-        }}
-      >
-        {/* LEFT: POSTS */}
-        <div>
-          {posts?.map((post) => (
-            <div
-              key={post.id}
-              style={{
-                padding: 20,
-                border: "1px solid #e5e5e5",
-                borderRadius: 10,
-                marginBottom: 15,
-                background: "#fff",
-              }}
-            >
-              <h2 style={{ margin: "0 0 10px 0" }}>
-                {post.title}
-              </h2>
-
-              <p style={{ fontSize: 12, color: "#999", marginTop: 6 }}>
-                {new Date(post.created_at).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                })}
-                </p>
-
-              <p style={{ color: "#555" }}>
-                {post.excerpt}
-              </p>
-
-              <Link
-                href={`/post/${post.id}`}
-                style={{
-                  display: "inline-block",
-                  marginTop: 10,
-                  color: "#2563eb",
-                  textDecoration: "none",
-                  fontWeight: 500,
-                }}
-              >
-                Read more →
-              </Link>
-            </div>
-          ))}
-        </div>
-
-        {/* RIGHT: INFO PANEL (same vibe as NER panel) */}
-        <div
-          style={{
-            borderLeft: "1px solid #eee",
-            paddingLeft: 20,
-          }}
-        >
-          <div
-            style={{
-              padding: 20,
-              border: "1px solid #eee",
-              borderRadius: 10,
-              background: "#fafafa",
-            }}
-          >
-
-
-            <p style={{ fontSize: 14, color: "#666" }}>
-              Select a post to edit content.
-            </p>
-
-            <p style={{ fontSize: 13, color: "#999" }}>
-              Total posts: {posts?.length || 0}
-            </p>
-          </div>
-        </div>
-      </div>
+      <PostList posts={posts} page={page} totalPages={totalPages} count={count} />
     </div>
   );
 }
