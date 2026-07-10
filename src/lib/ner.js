@@ -87,7 +87,7 @@ export async function extractEntities(text) {
   for (const chunk of chunks) {
     try {
       const resp = await together.chat.completions.create({
-        model: "meta-llama/Meta-Llama-3-8B-Instruct-Lite",
+        model: "meta-llama/Llama-3.3-70B-Instruct-Turbo",
         max_tokens: 1500,
         temperature: 0.2,
         messages: [
