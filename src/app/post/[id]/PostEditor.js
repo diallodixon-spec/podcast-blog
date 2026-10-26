@@ -93,7 +93,7 @@ export default function PostEditor({ id }) {
   if (loading) {
     return (
       <div style={{ padding: 40, fontSize: 14, color: "#666" }}>
-        Loading post...
+        Loading post and reviewing names and terms for possible corrections... 
       </div>
     );
   }
