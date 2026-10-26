@@ -61,8 +61,16 @@ export default function PostList({ posts, page, totalPages, count }) {
           </div>
         ))}
 
-        {/* PAGINATION */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
+      {/* PAGINATION */}
+      <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 8,
+            marginTop: 10,
+          }}
+        >
           {page > 1 && (
             <Link
               href={`/?page=${page - 1}`}
@@ -79,23 +87,66 @@ export default function PostList({ posts, page, totalPages, count }) {
             </Link>
           )}
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <Link
-              key={p}
-              href={`/?page=${p}`}
-              style={{
-                padding: "8px 14px",
-                border: "1px solid #e5e5e5",
-                borderRadius: 6,
-                textDecoration: "none",
-                color: p === page ? "#fff" : "#111",
-                background: p === page ? "#111" : "#fff",
-                fontWeight: 500,
-              }}
-            >
-              {p}
-            </Link>
-          ))}
+          {(() => {
+            let pages = [];
+
+            if (totalPages <= 4) {
+              pages = Array.from(
+                { length: totalPages },
+                (_, i) => i + 1
+              );
+            } else if (page <= 3) {
+              pages = [1, 2, 3, "...", totalPages];
+            } else if (page >= totalPages - 2) {
+              pages = [
+                1,
+                "...",
+                totalPages - 2,
+                totalPages - 1,
+                totalPages,
+              ];
+            } else {
+              pages = [
+                1,
+                "...",
+                page - 1,
+                page,
+                page + 1,
+                "...",
+                totalPages,
+              ];
+            }
+
+            return pages.map((p, i) =>
+              p === "..." ? (
+                <span
+                  key={`ellipsis-${i}`}
+                  style={{
+                    padding: "8px 4px",
+                    color: "#666",
+                  }}
+                >
+                  ...
+                </span>
+              ) : (
+                <Link
+                  key={p}
+                  href={`/?page=${p}`}
+                  style={{
+                    padding: "8px 14px",
+                    border: "1px solid #e5e5e5",
+                    borderRadius: 6,
+                    textDecoration: "none",
+                    color: p === page ? "#fff" : "#111",
+                    background: p === page ? "#111" : "#fff",
+                    fontWeight: 500,
+                  }}
+                >
+                  {p}
+                </Link>
+              )
+            );
+          })()}
 
           {page < totalPages && (
             <Link
@@ -112,7 +163,6 @@ export default function PostList({ posts, page, totalPages, count }) {
               Next →
             </Link>
           )}
-        </div>
       </div>
 
       {/* RIGHT: INFO PANEL */}
