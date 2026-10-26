@@ -88,7 +88,7 @@ export async function extractEntities(text) {
     try {
       const resp = await together.chat.completions.create({
         model: "meta-models/Muse-Glimmer-30B",
-        max_tokens: 1500,
+        max_tokens: 4500,
         temperature: 0.2,
         messages: [
           {
