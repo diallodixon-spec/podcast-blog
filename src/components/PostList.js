@@ -61,8 +61,8 @@ export default function PostList({ posts, page, totalPages, count }) {
           </div>
         ))}
 
-      {/* PAGINATION */}
-      <div
+        {/* PAGINATION */}
+                <div
           style={{
             display: "flex",
             alignItems: "center",
@@ -163,6 +163,7 @@ export default function PostList({ posts, page, totalPages, count }) {
               Next →
             </Link>
           )}
+        </div>
       </div>
 
       {/* RIGHT: INFO PANEL */}
